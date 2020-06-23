@@ -1,8 +1,10 @@
 /*
-rgba(53, 59, 72, 1.0)
-rgba(72, 52, 212, 1.0)
-rgba(48, 51, 107, 1.0)
 rgba(47, 54, 64, 1.0)
+rgba(53, 59, 72, 1.0)
+
+rgba(48, 51, 107, 1.0)
+rgba(72, 52, 212, 1.0)
+
 rgba(220, 221, 225, 1.0)
 rgba(223, 230, 233,1.0)
 rgba(255, 255, 255, 1.0)
@@ -108,4 +110,15 @@ a:focus {
 .calc__btn--equal {
     background-color: rgba(240, 147, 43, 1.0);
     color: rgba(47, 54, 64, 1.0);
+}
+
+.footer {
+    text-align: center;
+    color: rgba(223, 230, 233, 1.0);
+    font-size: 1.5rem;
+    padding-right: 2rem;
+}
+
+span {
+    margin-left: 4rem;
 }
