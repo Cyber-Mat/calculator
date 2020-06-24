@@ -62,6 +62,11 @@ const modelController = (() => {
         data.allItems.push('*');
       } else if (value === '÷') {
         data.allItems.push('/');
+      } else if (value === '±') {
+        // data.allItems[data.allItems.length - 1] = -data.allItems[data.allItems.length - 1];
+        // return data.allItems[data.allItems.length - 1];
+      } else if (value === '%') {
+        data.allItems = [`${data.allItems.join('')} / 100`];
       } else {
         data.allItems.push(value);
       }
@@ -73,9 +78,22 @@ const modelController = (() => {
 
     execute: (dom) => {
       try {
-        const dataStr = Function(`"use strict"; return ${data.allItems.join('')}`)();
+        let forData = data.allItems.map((c, i, a) => {
+          if (c === '*' && a[i + 1] === '*') {
+            c = Infinity;
+            return c;
+          } else if (c === '/' && a[i + 1] === '/') {
+            c = Infinity;
+            return c;
+          } else {
+            return c;
+          }
+        });
+        const dataStr = Function(`"use strict"; return ${forData.join('')}`)();
         data.total = dataStr;
-      } catch (error) {}
+      } catch (error) {
+        data.total = Infinity;
+      }
     },
 
     returnTotal: () => {
@@ -108,10 +126,13 @@ const modelController = (() => {
 
     resetData: () => {
       data.allItems = [];
-      //console.log(data.allItems);
       return data.allItems;
     },
 
+    resetTotal: () => {
+      data.total = 0;
+      return data.total;
+    },
     test: () => data.allItems,
   };
 })();
@@ -134,8 +155,10 @@ const appController = ((viewCtrl, modelCtrl) => {
       modelCtrl.execute(dom);
       total = modelCtrl.returnTotal();
       modelCtrl.resetData();
+      modelCtrl.resetTotal();
     } else if (e.target.className === 'calc__btn calc__btn--clear') {
       modelCtrl.resetData();
+      modelCtrl.resetTotal();
       viewCtrl.clearDisplay();
     }
 
