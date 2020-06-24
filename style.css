@@ -37,10 +37,17 @@ a:active,
 a:visited {
     text-decoration: none;
     color: unset;
+    cursor: cell;
 }
 
 a:focus {
     outline: none;
+}
+
+a:active div {
+    background-color: rgba(89, 98, 117, 1.0);
+    color: rgba(255, 255, 255, 1.0);
+
 }
 
 .clear-fix::after {
@@ -102,6 +109,8 @@ a:focus {
     border-bottom: none;
     box-shadow: 0 .3rem 10rem rgba(0, 0, 0, .2);
 }
+
+.calc__btn: {}
 
 .calc__btn--operator {
     background-color: rgba(48, 51, 107, 1.0)

@@ -14,13 +14,23 @@ const viewController = (() => {
     screenBottom: '.calc__screen--bottom',
     screenTop: '.calc__screen--top',
     allBtn: '.calc__btn',
-    clearBtn: '.btn__clear',
   };
 
   return {
     dom,
     renderInput: (arr) => {
-      document.querySelector(dom.screenTop).textContent = arr.join(' ');
+      let formattedArr = arr;
+
+      formattedArr = formattedArr.map((el) => {
+        if (el === '*') {
+          return (el = 'x');
+        } else if (el === '/') {
+          return (el = '÷');
+        }
+        return el;
+      });
+
+      document.querySelector(dom.screenTop).textContent = formattedArr.join(' ');
     },
 
     renderTotal: (total) => {
@@ -50,6 +60,8 @@ const modelController = (() => {
         return;
       } else if (value === 'x') {
         data.allItems.push('*');
+      } else if (value === '÷') {
+        data.allItems.push('/');
       } else {
         data.allItems.push(value);
       }
@@ -59,32 +71,39 @@ const modelController = (() => {
       return data.allItems;
     },
 
-    execute: () => {
-      const dataStr = Function(`"use strict"; return ${data.allItems.join('')}`)();
-      data.total = dataStr;
+    execute: (dom) => {
+      try {
+        const dataStr = Function(`"use strict"; return ${data.allItems.join('')}`)();
+        data.total = dataStr;
+      } catch (error) {}
     },
 
     returnTotal: () => {
       let total = data.total;
 
-      if (!Number.isInteger(total)) {
-        [int, float] = total.toString().split('.');
-        float = float.toString().split('');
+      if (total) {
+        if (!Number.isInteger(total) && total !== Infinity) {
+          [int, float] = total.toString().split('.');
+          float = float.toString().split('');
 
-        let formattedFloat = [];
+          let formattedFloat = [];
 
-        if (float.length > 10) {
-          for (let i = 0; i < 10; i++) {
-            formattedFloat.push(float[i]);
+          if (float.length > 10) {
+            for (let i = 0; i < 10; i++) {
+              formattedFloat.push(float[i]);
+            }
+
+            total = parseFloat(`${int.toString()}.${formattedFloat.join('')}`);
+            return total;
+          } else {
+            return total;
           }
-
-          total = parseFloat(`${int.toString()}.${formattedFloat.join('')}`);
-          return total;
-        } else {
+        } else if (total === Infinity) {
+          total = 'Err';
           return total;
         }
+        return total;
       }
-      return total;
     },
 
     resetData: () => {
@@ -108,30 +127,18 @@ const appController = ((viewCtrl, modelCtrl) => {
   // Calculate Function
   const calculate = (e) => {
     let value, dataArr, total;
-    if (e.target.firstElementChild) {
-      value = e.target.firstElementChild.textContent;
 
-      if (e.target.firstElementChild.className === 'btn__equal') {
-        modelCtrl.execute();
+    value = e.target.textContent;
 
-        total = modelCtrl.returnTotal();
-
-        modelCtrl.resetData();
-      } else if (e.target.firstElementChild.className === 'btn__clear') {
-        modelCtrl.resetData();
-        viewCtrl.clearDisplay();
-      }
-    } else {
-      value = e.target.textContent;
-      if (e.target.className === 'btn__equal') {
-        modelCtrl.execute();
-        total = modelCtrl.returnTotal();
-        modelCtrl.resetData();
-      } else if (e.target.className === 'btn__clear') {
-        modelCtrl.resetData();
-        viewCtrl.clearDisplay();
-      }
+    if (e.target.className === 'calc__btn calc__btn--equal') {
+      modelCtrl.execute(dom);
+      total = modelCtrl.returnTotal();
+      modelCtrl.resetData();
+    } else if (e.target.className === 'calc__btn calc__btn--clear') {
+      modelCtrl.resetData();
+      viewCtrl.clearDisplay();
     }
+
     modelCtrl.storeValue(value);
     dataArr = modelCtrl.returnData();
     viewCtrl.renderInput(dataArr);
