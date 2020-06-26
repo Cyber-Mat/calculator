@@ -21,11 +21,13 @@ const viewController = (() => {
     renderInput: (arr) => {
       let formattedArr = arr;
 
-      formattedArr = formattedArr.map((el) => {
+      formattedArr = formattedArr.map((el, ind, arr) => {
         if (el === '*') {
           return (el = 'x');
         } else if (el === '/') {
           return (el = '÷');
+        } else if (el === '* -1') {
+          el = '';
         }
         return el;
       });
@@ -63,8 +65,7 @@ const modelController = (() => {
       } else if (value === '÷') {
         data.allItems.push('/');
       } else if (value === '±') {
-        // data.allItems[data.allItems.length - 1] = -data.allItems[data.allItems.length - 1];
-        // return data.allItems[data.allItems.length - 1];
+        data.allItems.push('* -1');
       } else if (value === '%') {
         data.allItems = [`${data.allItems.join('')} / 100`];
       } else if (value === 'DEL') {
